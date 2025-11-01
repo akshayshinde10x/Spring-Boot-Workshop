@@ -6,7 +6,6 @@ WORKDIR /app
 
 # Copy Maven wrapper and POM to take advantage of caching
 COPY mvnw ./
-COPY .mvn/ .mvn/
 COPY pom.xml ./
 
 # Ensure the Maven wrapper is executable
@@ -33,5 +32,6 @@ EXPOSE 8081
 
 # Specify the command to run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
+
 
 
