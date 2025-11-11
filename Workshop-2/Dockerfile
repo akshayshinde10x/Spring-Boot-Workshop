@@ -1,33 +1,34 @@
-# Use Maven directly instead of wrapper
+# ---------- Build Stage ----------
 FROM eclipse-temurin:25-jdk AS build
 
-# Set the working directory
+# Install Maven manually in case CI/CD base image doesn’t include it
+RUN apt-get update && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
 WORKDIR /app
 
-# Copy pom.xml first (for dependency caching)
+# Copy pom.xml first for dependency caching
 COPY pom.xml .
 
-# Download dependencies (this step helps speed up rebuilds)
-RUN mvn dependency:go-offline
+# Download dependencies
+RUN mvn -B dependency:go-offline
 
 # Copy the source code
 COPY src ./src
 
-# Build the application
-RUN mvn clean package -DskipTests
+# Build the application (skip tests)
+RUN mvn -B clean package -DskipTests
 
-# Use a Java 25 runtime image to run the application
-FROM eclipse-temurin:25-jre
+# ---------- Runtime Stage ----------
+FROM eclipse-temurin:21-jre
 
-# Set the working directory
 WORKDIR /app
 
-# Copy the built JAR file from the build stage
+# Copy only the built JAR
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose port 8081 for the Spring Boot application
+# Expose port 8081
 EXPOSE 8081
 
-# Specify the command to run the application
+# Run the Spring Boot app
 ENTRYPOINT ["java", "-jar", "app.jar"]
-
