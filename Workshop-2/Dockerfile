@@ -1,5 +1,5 @@
 # Use Maven directly instead of wrapper
-FROM maven:3.9.8-eclipse-temurin-25 AS build
+FROM eclipse-temurin:25-jdk AS build
 
 # Set the working directory
 WORKDIR /app
@@ -30,3 +30,4 @@ EXPOSE 8081
 
 # Specify the command to run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
+
