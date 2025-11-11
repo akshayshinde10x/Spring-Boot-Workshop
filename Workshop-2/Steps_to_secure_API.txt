@@ -1,0 +1,13 @@
+Steps to Make API Secured with JWT
+
+1. Add Spring Security & JWT Dependency
+2. Change Application. Properties
+3. Add Users Entity
+4. Create UserRepository
+5. Create a AuthService & UserService & JWTService
+6. Create Register & Login DTO
+7. Create AuthController & UserController
+8. Add Config Package - IMP
+	SecurityConfiguration
+	JWTAuthenticationFilter
+	ApplicationConfiguration
