@@ -1,23 +1,20 @@
-# Use a Java 25 JDK image to build the Spring Boot app
-FROM eclipse-temurin:25-jdk AS build
+# Use Maven directly instead of wrapper
+FROM maven:3.9.8-eclipse-temurin-25 AS build
 
 # Set the working directory
 WORKDIR /app
 
-# Copy Maven wrapper and POM to take advantage of caching
-COPY mvnw ./
-COPY .mvn/ .mvn/
-COPY pom.xml ./
+# Copy pom.xml first (for dependency caching)
+COPY pom.xml .
 
-# Ensure the Maven wrapper is executable
-RUN chmod +x mvnw
+# Download dependencies (this step helps speed up rebuilds)
+RUN mvn dependency:go-offline
 
-# Download dependencies to cache them
-RUN ./mvnwdependency:go-offline
-
-# Copy the source code and build the application
+# Copy the source code
 COPY src ./src
-RUN ./mvnw clean package -DskipTests
+
+# Build the application
+RUN mvn clean package -DskipTests
 
 # Use a Java 25 runtime image to run the application
 FROM eclipse-temurin:25-jre
@@ -33,7 +30,3 @@ EXPOSE 8081
 
 # Specify the command to run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
-
-
-
-
